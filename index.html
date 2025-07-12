@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> InvestMate </title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, #8e2de2, #43cea2);
+            color: #fff;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+        header h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        header p { font-size: 1.1rem; margin-bottom: 1.2rem; }
+        header .btn {
+            background: rgba(255,255,255,0.9);
+            color: #8e2de2;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        header .btn:hover { background: #fff; }
+
+        .container { width: 90%; max-width: 1100px; margin: auto; }
+
+        .plans, .features, .counters, .testimonials { padding: 3rem 0; }
+        .plans { background: #fff; }
+        .plans h2, .features h2, .counters h2, .testimonials h2 {
+            text-align: center;
+            color: #8e2de2;
+            margin-bottom: 2rem;
+        }
+
+        .plan-grid, .feature-grid, .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .plan-card, .feature-card, .testimonial-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        .plan-card:hover, .feature-card:hover, .testimonial-card:hover {
+            transform: translateY(-5px);
+        }
+        .plan-card h3, .feature-card h4, .testimonial-card h4 { color: #43cea2; margin: 0.5rem 0; }
+        .plan-card span { display: block; margin: 1rem 0; font-weight: bold; color: #8e2de2; }
+        .plan-card button {
+            background: #8e2de2;
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 1rem;
+        }
+        .plan-card button:hover { background: #4a00e0; }
+
+        .counters .counter-grid {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        .counter-item {
+            text-align: center;
+        }
+        .counter-item h3 {
+            font-size: 2rem;
+            color: #8e2de2;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 999; }
+        .modal-content {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 90%;
+        }
+        .modal-content button {
+            background: #43cea2;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .modal-content button:hover { background: #2bb673; }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #555;
+            background: #f9f9f9;
+            margin-top: 2rem;
+        }
+
+        @media(max-width: 500px) {
+            header h1 { font-size: 1.8rem; }
+            header p { font-size: 1rem; }
+            .plan-card, .feature-card, .testimonial-card { padding: 1.5rem; }
+        }
+
+        /* DARK MODE */
+        body.dark {
+            background: #121212;
+            color: #eee;
+        }
+        body.dark header { background: linear-gradient(135deg, #2a0845, #0f2027); }
+        body.dark .plan-card, body.dark .feature-card, body.dark .testimonial-card, body.dark .modal-content {
+            background: #1e1e1e;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+        }
+        body.dark footer { background: #1a1a1a; color: #aaa; }
+        body.dark .plan-card button, body.dark .modal-content button { background: #43cea2; }
+        body.dark header .btn { background: rgba(255,255,255,0.2); color: #fff; }
+        body.dark header .btn:hover { background: rgba(255,255,255,0.4); }
+
+        /* DARK toggle */
+        #dark-toggle {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            background: #43cea2;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+        #dark-toggle:hover { background: #2bb673; }
+
+        /* CHAT BOT */
+        #chatbot {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 280px;
+            max-height: 400px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+        }
+        #chatbot header {
+            background: #8e2de2;
+            color: #fff;
+            padding: 0.8rem;
+            text-align: center;
+        }
+        #chatbot .messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+        #chatbot input {
+            border: none;
+            border-top: 1px solid #ccc;
+            padding: 0.7rem;
+            width: 100%;
+            outline: none;
+        }
+        #chatbot-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #43cea2;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+<button id="dark-toggle" onclick="toggleDark()">🌙</button>
+
+<header>
+    <div class="container">
+        <h1>كبر فلوسك بأمان معانا</h1>
+        <p>InvestMate - استثمر براحتك واستلم أرباحك بسرعة</p>
+        <a href="login.html" class="btn">ابدأ استثمارك دلوقتي</a>
+    </div>
+</header>
+
+<section class="plans" id="plans">
+    <div class="container">
+        <h2>خططنا الاستثمارية</h2>
+        <div class="plan-grid">
+            <div class="plan-card">
+                <h3>الخطة البرونزية</h3>
+                <p>من 500 جم</p>
+                <span>5% أسبوعيًا</span>
+                <button onclick="choosePlan('الخطة البرونزية')">استثمر دلوقتي</button>
+            </div>
+            <div class="plan-card">
+                <h3>الخطة الفضية</h3>
+                <p>من 2000 جم</p>
+                <span>7% أسبوعيًا</span>
+                <button onclick="choosePlan('الخطة الفضية')">استثمر دلوقتي</button>
+            </div>
+            <div class="plan-card">
+                <h3>الخطة الذهبية</h3>
+                <p>من 5000 جم</p>
+                <span>10% أسبوعيًا</span>
+                <button onclick="choosePlan('الخطة الذهبية')">استثمر دلوقتي</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2>ليه تختار موقعنا؟</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <span style="font-size:2rem;">🔒</span>
+                <h4>استثمار آمن</h4>
+                <p>أموالك في أمان مع أنظمة حماية قوية وضمانات موثوقة.</p>
+            </div>
+            <div class="feature-card">
+                <span style="font-size:2rem;">⚡</span>
+                <h4>تحويل أرباح سريع</h4>
+                <p>استلم أرباحك فورًا لأي بنك أو محفظة إلكترونية في مصر.</p>
+            </div>
+            <div class="feature-card">
+                <span style="font-size:2rem;">👥</span>
+                <h4>دعم على مدار الساعة</h4>
+                <p>فريقنا جاهز يرد على أسئلتك طول الأسبوع.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="counters">
+    <div class="container">
+        <h2>أرقامنا بتتكلم</h2>
+        <div class="counter-grid">
+            <div class="counter-item">
+                <h3 id="clients">0</h3>
+                <p>عميل سعيد</p>
+            </div>
+            <div class="counter-item">
+                <h3 id="profits">0</h3>
+                <p>ألف جم أرباح مدفوعة</p>
+            </div>
+            <div class="counter-item">
+                <h3 id="support">0</h3>
+                <p>ساعة دعم شهريًا</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="testimonials">
+    <div class="container">
+        <h2>آراء عملائنا</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <h4>محمد من القاهرة</h4>
+                <p>"أكتر موقع موثوق استثمرت معاه. أرباحي وصلتني أسرع من المتوقع!"</p>
+            </div>
+            <div class="testimonial-card">
+                <h4>آية من الإسكندرية</h4>
+                <p>"خدمة ممتازة جدًا والدعم متعاون على طول."</p>
+            </div>
+            <div class="testimonial-card">
+                <h4>كريم من المنصورة</h4>
+                <p>"أنصح أي حد يجرب الاستثمار معاهم. تجربة رائعة."</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2025 جميع الحقوق محفوظة - موقع الاستثمار المصري</p>
+</footer>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3>ممتاز!</h3>
+        <p id="modal-text"></p>
+        <button onclick="closeModal()">تمام</button>
+    </div>
+</div>
+
+<div id="chatbot">
+    <header>
+        💬 دردشة فورية
+        <button onclick="toggleChat()" style="
+            float: left;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+        ">✖</button>
+    </header>
+    <div class="messages" id="chat-messages">
+        <div class="bot">🤖 أهلاً! كيف أساعدك اليوم؟</div>
+    </div>
+    <input type="text" id="chat-input" placeholder="اكتب رسالتك واضغط Enter...">
+</div>
+<button id="chatbot-toggle" onclick="toggleChat()">💬</button>
+
+<style>
+    #chatbot .messages {
+        display: flex;
+        flex-direction: column;
+    }
+    #chatbot .messages div {
+        margin: 0.5rem 0;
+        padding: 0.6rem 1rem;
+        border-radius: 20px;
+        max-width: 80%;
+        animation: fadeIn 0.5s ease;
+        word-wrap: break-word;
+    }
+    #chatbot .messages .user {
+        background: #43cea2;
+        color: #fff;
+        align-self: flex-end;
+        text-align: right;
+    }
+    #chatbot .messages .bot {
+        background: #eee;
+        color: #333;
+        align-self: flex-start;
+        text-align: left;
+    }
+    @keyframes fadeIn {
+        from {opacity: 0; transform: translateY(10px);}
+        to {opacity: 1; transform: translateY(0);}
+    }
+</style>
+
+<script>
+function choosePlan(planName) {
+    const modal = document.getElementById("modal");
+    document.getElementById("modal-text").innerText = `انت اخترت ${planName} ✅.\nهيتم تحويلك للتسجيل بعدين.`;
+    modal.style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+function animateCounter(id, target, speed) {
+    const el = document.getElementById(id);
+    let count = 0;
+    const inc = target / (1000 / speed);
+    const update = () => {
+        count += inc;
+        if(count < target){
+            el.innerText = Math.floor(count);
+            requestAnimationFrame(update);
+        } else {
+            el.innerText = target;
+        }
+    }
+    update();
+}
+
+function toggleDark() {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    updateToggleIcon();
+}
+
+function updateToggleIcon() {
+    const icon = document.getElementById("dark-toggle");
+    if(document.body.classList.contains('dark')) {
+        icon.innerText = "☀️";
+    } else {
+        icon.innerText = "🌙";
+    }
+}
+
+function toggleChat() {
+    const bot = document.getElementById('chatbot');
+    bot.style.display = bot.style.display === 'flex' ? 'none' : 'flex';
+}
+
+document.getElementById('chat-input').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') {
+        const input = this.value.trim();
+        if(input){
+            const chat = document.getElementById('chat-messages');
+            chat.innerHTML += `<div class="user">🧑 ${input}</div>`;
+            setTimeout(() => {
+                chat.innerHTML += `<div class="bot">🤖 شكراً! هنرد عليك قريبًا.</div>`;
+                chat.scrollTop = chat.scrollHeight;
+            }, 600);
+            this.value = '';
+            chat.scrollTop = chat.scrollHeight;
+        }
+    }
+});
+
+window.onload = () => {
+    animateCounter('clients', 350, 20);
+    animateCounter('profits', 1200, 20);
+    animateCounter('support', 720, 20);
+
+    // تشغيل الوضع المحفوظ
+    if(localStorage.getItem('theme') === 'dark'){
+        document.body.classList.add('dark');
+    }
+    updateToggleIcon();
+
+    // تشيك تسجيل الدخول وتحويل مباشر
+    fetch("check_session.php")
+        .then(response => response.json())
+        .then(data => {
+            if(data.loggedIn){
+                window.location.href = "user/dashboard.php";
+            }
+        });
+}
+</script>
+</body>
+</html>
